@@ -731,7 +731,7 @@ def recovery_factor(returns, prepare_returns=True):
         returns = _utils._prepare_returns(returns)
     # total_returns = comp(returns)
     max_dd = max_drawdown(returns)
-    return 555 #returns["returns"].cumsum()[-1] / abs(max_dd) / len(returns["returns"])
+    return returns.cumsum()[-1] / abs(max_dd) / len(returns)
 
 
 def risk_return_ratio(returns, prepare_returns=True):
