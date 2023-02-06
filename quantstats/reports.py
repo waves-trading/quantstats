@@ -667,12 +667,12 @@ def plots(returns, benchmark=None, grayscale=False,
     _plots.returns(returns, benchmark, grayscale=grayscale,
                    figsize=(figsize[0], figsize[0]*.6),
                    show=True, ylabel=False,
-                   prepare_returns=False)
+                   prepare_returns=False, compound=compounded, cumulative=compounded)
 
     _plots.log_returns(returns, benchmark, grayscale=grayscale,
                        figsize=(figsize[0], figsize[0]*.5),
                        show=True, ylabel=False,
-                       prepare_returns=False)
+                       prepare_returns=False, compound=compounded, cumulative=compounded)
 
     if benchmark is not None:
         _plots.returns(returns, benchmark, match_volatility=True,
