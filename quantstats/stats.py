@@ -579,7 +579,7 @@ def serenity_index(returns, rf=0):
     dd = to_drawdown_series(returns)
     pitfall = - cvar(dd) / returns.std()
     # return (comp(returns)-rf) / (ulcer_index(returns) * pitfall)
-    return (returns-rf) / (ulcer_index(returns) * pitfall)
+    return (returns.cumsum()[-1]-rf) / (ulcer_index(returns) * pitfall)
 
 
 def risk_of_ruin(returns, prepare_returns=True):
@@ -731,7 +731,7 @@ def recovery_factor(returns, prepare_returns=True):
         returns = _utils._prepare_returns(returns)
     # total_returns = comp(returns)
     max_dd = max_drawdown(returns)
-    return returns / abs(max_dd)
+    return returns.cumsum()[-1] / abs(max_dd) / len(returns)
 
 
 def risk_return_ratio(returns, prepare_returns=True):
