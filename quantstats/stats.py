@@ -571,15 +571,17 @@ def upi(returns, rf=0):
     return ulcer_performance_index(returns, rf)
 
 
-def serenity_index(returns, rf=0):
+def serenity_index(returns, rf=0, compounded=False):
     """
     Calculates the serenity index score
     (https://www.keyquant.com/Download/GetFile?Filename=%5CPublications%5CKeyQuant_WhitePaper_APT_Part1.pdf)
     """
     dd = to_drawdown_series(returns)
     pitfall = - cvar(dd) / returns.std()
-    # return (comp(returns)-rf) / (ulcer_index(returns) * pitfall)
-    return (returns["returns"].cumsum().values[-1]-rf) / (ulcer_index(returns) * pitfall)
+    if compounded:
+        return (comp(returns)-rf) / (ulcer_index(returns) * pitfall)
+    else:
+        return (returns["returns"].cumsum().values[-1]-rf) / (ulcer_index(returns) * pitfall)
 
 
 def risk_of_ruin(returns, prepare_returns=True):
@@ -725,14 +727,19 @@ def outlier_loss_ratio(returns, quantile=.01, prepare_returns=True):
     return returns.quantile(quantile).mean() / returns[returns < 0].mean()
 
 
-def recovery_factor(returns, prepare_returns=True):
+def recovery_factor(returns, prepare_returns=True, compounded=False):
     """Measures how fast the strategy recovers from drawdowns"""
     if prepare_returns:
         returns = _utils._prepare_returns(returns)
-    # total_returns = comp(returns)
+
     max_dd = max_drawdown(returns)
-    years = len(returns) / 365
-    return returns["returns"].cumsum().values[-1] / abs(max_dd) / years
+
+    if compounded:
+        total_returns = comp(returns)
+        return total_returns / abs(max_dd)
+    else:
+        years = len(returns) / 365
+        return returns["returns"].cumsum().values[-1] / abs(max_dd) / years
 
 
 def risk_return_ratio(returns, prepare_returns=True):

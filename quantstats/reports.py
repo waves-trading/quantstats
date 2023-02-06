@@ -553,9 +553,9 @@ def metrics(returns, benchmark=None, rf=0., display=True,
     metrics['~~~~'] = blank
     for ix, row in dd.iterrows():
         metrics[ix] = row
-    metrics['Recovery Factor'] = _stats.recovery_factor(df)
+    metrics['Recovery Factor'] = _stats.recovery_factor(df, compounded)
     metrics['Ulcer Index'] = _stats.ulcer_index(df)
-    metrics['Serenity Index'] = _stats.serenity_index(df, rf)
+    metrics['Serenity Index'] = _stats.serenity_index(df, rf, compounded)
 
     # win rate
     if mode.lower() == 'full':
