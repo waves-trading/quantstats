@@ -325,7 +325,6 @@ def basic(returns, benchmark=None, rf=0., grayscale=False,
 
     # prepare timeseries
     returns = _utils._prepare_returns(returns)
-    print(returns)
     if benchmark is not None:
         benchmark = _utils._prepare_benchmark(benchmark, returns.index, rf)
         if match_dates is True:
