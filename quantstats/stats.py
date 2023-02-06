@@ -732,13 +732,14 @@ def recovery_factor(returns, prepare_returns=True, compounded=False):
     if prepare_returns:
         returns = _utils._prepare_returns(returns)
 
-    max_dd = max_drawdown(returns)
-
     if compounded:
         total_returns = comp(returns)
+        max_dd = max_drawdown(returns)
+        print(total_returns, max_dd, total_returns / abs(max_dd))
         return total_returns / abs(max_dd)
     else:
         years = len(returns) / 365
+        max_dd = max_drawdown(returns)
         return returns["returns"].cumsum().values[-1] / abs(max_dd) / years
 
 
