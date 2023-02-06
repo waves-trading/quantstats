@@ -731,6 +731,8 @@ def recovery_factor(returns, prepare_returns=True):
         returns = _utils._prepare_returns(returns)
     # total_returns = comp(returns)
     max_dd = max_drawdown(returns)
+    print(returns.cumsum()[-1])
+    print(len(returns))
     return returns.cumsum()[-1] / abs(max_dd) / len(returns)
 
 
