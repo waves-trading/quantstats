@@ -727,7 +727,7 @@ def outlier_loss_ratio(returns, quantile=.01, prepare_returns=True):
     return returns.quantile(quantile).mean() / returns[returns < 0].mean()
 
 
-def recovery_factor(returns, prepare_returns=True, compounded=False):
+def recovery_factor(returns, compounded=False, prepare_returns=True):
     """Measures how fast the strategy recovers from drawdowns"""
     if prepare_returns:
         returns = _utils._prepare_returns(returns)
@@ -735,7 +735,6 @@ def recovery_factor(returns, prepare_returns=True, compounded=False):
     if compounded:
         total_returns = comp(returns)
         max_dd = max_drawdown(returns)
-        print(total_returns, max_dd, total_returns / abs(max_dd))
         return total_returns / abs(max_dd)
     else:
         years = len(returns) / 365
