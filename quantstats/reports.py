@@ -58,7 +58,7 @@ def _match_dates(returns, benchmark):
 def html(returns, benchmark=None, rf=0., grayscale=False,
          title='Strategy Tearsheet', output=None, compounded=True,
          periods_per_year=252, download_filename='quantstats-tearsheet.html',
-         figfmt='svg', template_path=None, match_dates=False, **kwargs):
+         figfmt='svg', template_path=None, match_dates=False, real_returns=None, **kwargs):
 
     if output is None and not _utils._in_notebook():
         raise ValueError("`file` must be specified")
@@ -72,6 +72,8 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
 
     # prepare timeseries
     returns = _utils._prepare_returns(returns)
+    if real_returns is not None:
+        real_returns = _utils._prepare_returns(real_returns)
 
     if benchmark is not None:
         benchmark_title = kwargs.get('benchmark_title', 'Benchmark')
@@ -98,7 +100,7 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
                    sep=True, internal="True",
                    compounded=compounded,
                    periods_per_year=periods_per_year,
-                   prepare_returns=False)[2:]
+                   prepare_returns=False, real_returns=real_returns)[2:]
 
     mtrx.index.name = 'Metric'
     tpl = tpl.replace('{{metrics}}', _html_table(mtrx))
@@ -230,7 +232,7 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
     tpl = tpl.replace('{{dd_periods}}', _embed_figure(figfile, figfmt))
 
     figfile = _utils._file_stream()
-    _plots.drawdown(returns, grayscale=grayscale,
+    _plots.drawdown(real_returns, grayscale=grayscale,
                     figsize=(8, 3), subtitle=False,
                     savefig={'fname': figfile, 'format': figfmt},
                     show=False, ylabel=False)
@@ -358,7 +360,7 @@ def basic(returns, benchmark=None, rf=0., grayscale=False,
 def metrics(returns, benchmark=None, rf=0., display=True,
             mode='basic', sep=False, compounded=True,
             periods_per_year=252, prepare_returns=True,
-            match_dates=False, **kwargs):
+            match_dates=False, real_returns=None, **kwargs):
 
     win_year, _ = _get_trading_periods(periods_per_year)
 
@@ -377,10 +379,20 @@ def metrics(returns, benchmark=None, rf=0., display=True,
             raise ValueError("`returns` needs to be a Pandas Series or one column DataFrame. multi colums DataFrame was passed")
         returns = returns[returns.columns[0]]
 
+    if real_returns is not None:
+        if isinstance(real_returns, _pd.DataFrame):
+            if len(real_returns.columns) > 1:
+                raise ValueError("`returns` needs to be a Pandas Series or one column DataFrame. multi colums DataFrame was passed")
+            real_returns = real_returns[real_returns.columns[0]]
+
     if prepare_returns:
         returns = _utils._prepare_returns(returns)
+        if real_returns is not None:
+            real_returns = _utils._prepare_returns(real_returns)
 
     df = _pd.DataFrame({"returns": returns})
+    if real_returns is not None:
+        df_real = _pd.DataFrame({"returns": real_returns})
 
     if benchmark is not None:
         blank = ['', '']
@@ -391,15 +403,21 @@ def metrics(returns, benchmark=None, rf=0., display=True,
         df["benchmark"] = benchmark
 
     df = df.fillna(0)
+    if real_returns is not None:
+        df_real = df_real.fillna(0)
 
-    # pct multiplier
+    # pct multipl ier
     pct = 100 if display or "internal" in kwargs else 1
     if kwargs.get("as_pct", False):
         pct = 100
 
     # return df
-    dd = _calc_dd(df, display=(display or "internal" in kwargs),
-                  as_pct=kwargs.get("as_pct", False))
+    if real_returns is not None:
+        dd = _calc_dd(df_real, display=(display or "internal" in kwargs),
+                      as_pct=kwargs.get("as_pct", False))
+    else:
+        dd = _calc_dd(df, display=(display or "internal" in kwargs),
+                      as_pct=kwargs.get("as_pct", False))
 
     metrics = _pd.DataFrame()
 
@@ -553,7 +571,11 @@ def metrics(returns, benchmark=None, rf=0., display=True,
     metrics['~~~~'] = blank
     for ix, row in dd.iterrows():
         metrics[ix] = row
-    metrics['Recovery Factor'] = _stats.recovery_factor(df, compounded)
+
+    if real_returns is not None:
+        metrics['Recovery Factor'] = _stats.recovery_factor(df_real, compounded)
+    else:
+        metrics['Recovery Factor'] = _stats.recovery_factor(df, compounded)
     metrics['Ulcer Index'] = _stats.ulcer_index(df)
     metrics['Serenity Index'] = _stats.serenity_index(df, rf, compounded)
 
