@@ -131,13 +131,22 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
         tpl = tpl.replace('{{eoy_title}}', '<h3>EOY Returns</h3>')
         tpl = tpl.replace('{{eoy_table}}', _html_table(yoy))
 
-    dd = _stats.to_drawdown_series(returns)
-    dd_info = _stats.drawdown_details(dd).sort_values(
-        by='max drawdown', ascending=True)[:10]
+    if real_returns is not None:
+        dd = _stats.to_drawdown_series(real_returns)
+        dd_info = _stats.drawdown_details(dd).sort_values(
+            by='max drawdown', ascending=True)[:10]
 
-    dd_info = dd_info[['start', 'end', 'max drawdown', 'days']]
-    dd_info.columns = ['Started', 'Recovered', 'Drawdown', 'Days']
-    tpl = tpl.replace('{{dd_info}}', _html_table(dd_info, False))
+        dd_info = dd_info[['start', 'end', 'max drawdown', 'days']]
+        dd_info.columns = ['Started', 'Recovered', 'Drawdown', 'Days']
+        tpl = tpl.replace('{{dd_info}}', _html_table(dd_info, False))
+    else:
+        dd = _stats.to_drawdown_series(returns)
+        dd_info = _stats.drawdown_details(dd).sort_values(
+            by='max drawdown', ascending=True)[:10]
+
+        dd_info = dd_info[['start', 'end', 'max drawdown', 'days']]
+        dd_info.columns = ['Started', 'Recovered', 'Drawdown', 'Days']
+        tpl = tpl.replace('{{dd_info}}', _html_table(dd_info, False))
 
     # plots
     figfile = _utils._file_stream()
