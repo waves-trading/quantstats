@@ -126,7 +126,7 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
             returns, returns.index.year, True)
         yoy['Return'] = yoy['Return'].round(2).astype(str) + ''
         yoy['Cumulative'] = (yoy['Cumulative'] *
-                             100).round(2).astype(str) + ''
+                             100).round(2).astype(str) + '' + ''
         yoy.index.name = 'Year'
         tpl = tpl.replace('{{eoy_title}}', '<h3>EOY Returns</h3>')
         tpl = tpl.replace('{{eoy_table}}', _html_table(yoy))
