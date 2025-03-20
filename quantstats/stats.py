@@ -77,10 +77,10 @@ def distribution(returns, compounded=True, prepare_returns=True):
 
     return {
         "Daily": get_outliers(daily),
-        "Weekly": get_outliers(daily.resample('W-MON').apply(apply_fnc)),
-        "Monthly": get_outliers(daily.resample('M').apply(apply_fnc)),
-        "Quarterly": get_outliers(daily.resample('Q').apply(apply_fnc)),
-        "Yearly": get_outliers(daily.resample('A').apply(apply_fnc))
+        "Weekly": get_outliers(daily.resample('W-MON').agg(apply_fnc)),
+        "Monthly": get_outliers(daily.resample('M').agg(apply_fnc)),
+        "Quarterly": get_outliers(daily.resample('Q').agg(apply_fnc)),
+        "Yearly": get_outliers(daily.resample('A').agg(apply_fnc))
     }
 
 
@@ -365,7 +365,7 @@ def rolling_sortino(returns, rf=0, rolling_period=126, annualize=True,
     if kwargs.get("prepare_returns", True):
         returns = _utils._prepare_returns(returns, rf, rolling_period)
 
-    downside = returns.rolling(rolling_period).apply(
+    downside = returns.rolling(rolling_period).agg(
         lambda x: (x.values[x.values < 0]**2).sum()) / rolling_period
 
     res = returns.rolling(rolling_period).mean() / _np.sqrt(downside)

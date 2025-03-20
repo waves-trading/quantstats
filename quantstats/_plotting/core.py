@@ -90,7 +90,7 @@ def plot_returns_bars(returns, benchmark=None,
 
     df = df.dropna()
     if resample is not None:
-        df = df.resample(resample).apply(
+        df = df.resample(resample).agg(
             _stats.comp).resample(resample).last()
     # ---------------
 
@@ -322,7 +322,7 @@ def plot_histogram(returns, resample="M", bins=20,
         colors = ['silver', 'gray', 'black']
 
     apply_fnc = _stats.comp if compounded else _np.sum
-    returns = returns.fillna(0).resample(resample).apply(
+    returns = returns.fillna(0).resample(resample).agg(
         apply_fnc).resample(resample).last()
 
     fig, ax = _plt.subplots(figsize=figsize)
@@ -660,19 +660,19 @@ def plot_distribution(returns, figsize=(10, 6),
     apply_fnc = _stats.comp if compounded else _np.sum
 
     port['Weekly'] = port['Daily'].resample(
-        'W-MON').apply(apply_fnc)
+        'W-MON').agg(apply_fnc)
     port['Weekly'].ffill(inplace=True)
 
     port['Monthly'] = port['Daily'].resample(
-        'M').apply(apply_fnc)
+        'M').agg(apply_fnc)
     port['Monthly'].ffill(inplace=True)
 
     port['Quarterly'] = port['Daily'].resample(
-        'Q').apply(apply_fnc)
+        'Q').agg(apply_fnc)
     port['Quarterly'].ffill(inplace=True)
 
     port['Yearly'] = port['Daily'].resample(
-        'A').apply(apply_fnc)
+        'A').agg(apply_fnc)
     port['Yearly'].ffill(inplace=True)
 
     fig, ax = _plt.subplots(figsize=figsize)

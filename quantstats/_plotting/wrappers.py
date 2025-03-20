@@ -373,16 +373,16 @@ def yearly_returns(returns, benchmark=None,
     if benchmark is not None:
         title += '  vs Benchmark'
         benchmark = _utils._prepare_benchmark(
-            benchmark, returns.index).resample('A').apply(
+            benchmark, returns.index).resample('A').agg(
                 _stats.comp).resample('A').last()
 
     if prepare_returns:
         returns = _utils._prepare_returns(returns)
 
     if compounded:
-        returns = returns.resample('A').apply(_stats.comp)
+        returns = returns.resample('A').agg(_stats.comp)
     else:
-        returns = returns.resample('A').apply(_df.sum)
+        returns = returns.resample('A').agg(_df.sum)
     returns = returns.resample('A').last()
 
     fig = _core.plot_returns_bars(returns, benchmark,
