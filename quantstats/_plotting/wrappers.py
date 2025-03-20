@@ -382,7 +382,7 @@ def yearly_returns(returns, benchmark=None,
     if compounded:
         returns = returns.resample('A').agg(_stats.comp)
     else:
-        returns = returns.resample('A').agg(_df.sum)
+        returns = returns.resample('A').sum()
     returns = returns.resample('A').last()
 
     fig = _core.plot_returns_bars(returns, benchmark,
