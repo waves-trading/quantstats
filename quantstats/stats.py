@@ -481,7 +481,7 @@ def gain_to_pain_ratio(returns, rf=0, resolution="D"):
     Jack Schwager's GPR. See here for more info:
     https://archive.is/wip/2rwFW
     """
-    returns = _utils._prepare_returns(returns, rf).resample(resolution).sum()
+    returns = _utils._prepare_returns(returns, rf).resample(_utils.pd_freq(resolution)).sum()
     downside = abs(returns[returns < 0].sum())
     return returns.sum() / downside
 

@@ -90,8 +90,8 @@ def plot_returns_bars(returns, benchmark=None,
 
     df = df.dropna()
     if resample is not None:
-        df = df.resample(resample).agg(
-            _stats.comp).resample(resample).last()
+        df = df.resample(_utils.pd_freq(resample)).agg(
+            _stats.comp).resample(_utils.pd_freq(resample)).last()
     # ---------------
 
     fig, ax = _plt.subplots(figsize=figsize)
@@ -216,10 +216,10 @@ def plot_timeseries(returns, benchmark=None,
                 benchmark = benchmark.cumsum()
 
     if resample:
-        returns = returns.resample(resample)
+        returns = returns.resample(_utils.pd_freq(resample))
         returns = returns.last() if compound is True else returns.sum()
         if isinstance(benchmark, _pd.Series):
-            benchmark = benchmark.resample(resample)
+            benchmark = benchmark.resample(_utils.pd_freq(resample))
             benchmark = benchmark.last(
             ) if compound is True else benchmark.sum()
     # ---------------
@@ -322,8 +322,8 @@ def plot_histogram(returns, resample="M", bins=20,
         colors = ['silver', 'gray', 'black']
 
     apply_fnc = _stats.comp if compounded else _np.sum
-    returns = returns.fillna(0).resample(resample).agg(
-        apply_fnc).resample(resample).last()
+    returns = returns.fillna(0).resample(_utils.pd_freq(resample)).agg(
+        apply_fnc).resample(_utils.pd_freq(resample)).last()
 
     fig, ax = _plt.subplots(figsize=figsize)
     ax.spines['top'].set_visible(False)
@@ -664,15 +664,15 @@ def plot_distribution(returns, figsize=(10, 6),
     port['Weekly'].ffill(inplace=True)
 
     port['Monthly'] = port['Daily'].resample(
-        'M').agg(apply_fnc)
+        'ME').agg(apply_fnc)
     port['Monthly'].ffill(inplace=True)
 
     port['Quarterly'] = port['Daily'].resample(
-        'Q').agg(apply_fnc)
+        'QE').agg(apply_fnc)
     port['Quarterly'].ffill(inplace=True)
 
     port['Yearly'] = port['Daily'].resample(
-        'A').agg(apply_fnc)
+        'YE').agg(apply_fnc)
     port['Yearly'].ffill(inplace=True)
 
     fig, ax = _plt.subplots(figsize=figsize)

@@ -124,6 +124,25 @@ def group_returns(returns, groupby, compounded=False):
     return returns.groupby(groupby).sum()
 
 
+# pandas 3 removed the single-letter offset aliases. Callers (and this
+# library's own defaults) still speak the old vocabulary, so normalise right
+# before handing anything to pandas .resample() — one place instead of chasing
+# every default and every caller.
+_FREQ_ALIASES = {
+    'M': 'ME', 'Q': 'QE', 'A': 'YE', 'Y': 'YE',
+    'H': 'h', 'T': 'min', 'S': 's',
+    'BM': 'BME', 'BQ': 'BQE', 'BA': 'BYE', 'BY': 'BYE',
+    'AS': 'YS', 'BAS': 'BYS',
+    '1M': '1ME', '1Q': '1QE', '1A': '1YE', '1Y': '1YE',
+    '3M': '3ME', '6M': '6ME',
+}
+
+
+def pd_freq(freq):
+    """Old offset alias -> the pandas 3 spelling; anything else passes through."""
+    return _FREQ_ALIASES.get(freq, freq) if isinstance(freq, str) else freq
+
+
 def aggregate_returns(returns, period=None, compounded=True):
     """Aggregates returns based on date periods"""
     if period is None or 'day' in period:
@@ -371,7 +390,7 @@ def make_index(ticker_weights, rebalance="1ME", period="max", returns=None, matc
     last_day = index.index[-1]
 
     # rebalance marker
-    rbdf = index.resample(rebalance).first()
+    rbdf = index.resample(pd_freq(rebalance)).first()
     rbdf['break'] = rbdf.index.strftime('%s')
 
     # index returns with rebalance markers
