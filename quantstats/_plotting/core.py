@@ -661,19 +661,19 @@ def plot_distribution(returns, figsize=(10, 6),
 
     port['Weekly'] = port['Daily'].resample(
         'W-MON').agg(apply_fnc)
-    port['Weekly'].ffill(inplace=True)
+    port['Weekly'] = port['Weekly'].ffill()
 
     port['Monthly'] = port['Daily'].resample(
         'ME').agg(apply_fnc)
-    port['Monthly'].ffill(inplace=True)
+    port['Monthly'] = port['Monthly'].ffill()
 
     port['Quarterly'] = port['Daily'].resample(
         'QE').agg(apply_fnc)
-    port['Quarterly'].ffill(inplace=True)
+    port['Quarterly'] = port['Quarterly'].ffill()
 
     port['Yearly'] = port['Daily'].resample(
         'YE').agg(apply_fnc)
-    port['Yearly'].ffill(inplace=True)
+    port['Yearly'] = port['Yearly'].ffill()
 
     fig, ax = _plt.subplots(figsize=figsize)
     ax.spines['top'].set_visible(False)
