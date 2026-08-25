@@ -324,7 +324,7 @@ def _score_str(val):
     return ("" if "-" in val else "+") + str(val)
 
 
-def make_index(ticker_weights, rebalance="1M", period="max", returns=None, match_dates=False):
+def make_index(ticker_weights, rebalance="1ME", period="max", returns=None, match_dates=False):
     """
     Makes an index out of the given tickers and weights.
     Optionally you can pass a dataframe with the returns.

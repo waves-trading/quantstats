@@ -111,7 +111,7 @@ def html(returns, benchmark=None, rf=0., grayscale=False,
 
     if benchmark is not None:
         yoy = _stats.compare(
-            returns, benchmark, "A", compounded=compounded,
+            returns, benchmark, "YE", compounded=compounded,
             prepare_returns=False)
         yoy.columns = ['Benchmark', 'Strategy', 'Multiplier', 'Won']
         yoy.index.name = 'Year'
@@ -522,11 +522,11 @@ def metrics(returns, benchmark=None, rf=0., display=True,
         metrics['Max Consecutive Losses *int'] = _stats.consecutive_losses(df)
 
     metrics['Gain/Pain Ratio'] = _stats.gain_to_pain_ratio(df, rf)
-    metrics['Gain/Pain (1M)'] = _stats.gain_to_pain_ratio(df, rf, "M")
+    metrics['Gain/Pain (1M)'] = _stats.gain_to_pain_ratio(df, rf, "ME")
     # if mode.lower() == 'full':
-    #     metrics['GPR (3M)'] = _stats.gain_to_pain_ratio(df, rf, "Q")
+    #     metrics['GPR (3M)'] = _stats.gain_to_pain_ratio(df, rf, "QE")
     #     metrics['GPR (6M)'] = _stats.gain_to_pain_ratio(df, rf, "2Q")
-    #     metrics['GPR (1Y)'] = _stats.gain_to_pain_ratio(df, rf, "A")
+    #     metrics['GPR (1Y)'] = _stats.gain_to_pain_ratio(df, rf, "YE")
     metrics['~~~~~~~'] = blank
 
     metrics['Payoff Ratio'] = _stats.payoff_ratio(df, prepare_returns=False)
